@@ -45,8 +45,9 @@ def get_equipped_gems_requirements(data):
 
 
 def main():
-    CHARACTER = 'BlyatLiga'
-    gems = get_equipped_gems_requirements(get_character_data(CHARACTER))
+    character_name = input('Введите имя Вашего персонажа: ')
+
+    gems = get_equipped_gems_requirements(get_character_data(character_name))
     [print(f'gem: {k}. requirements: {v}') for k,v in gems.items()]
 
 

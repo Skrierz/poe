@@ -12,7 +12,8 @@ deploy:
   provider: releases
   api_key:
     secure: $RELEASES_API_KEY
-  file: ./dist/poe_gems*
+  file_glob: true
+  file: "./dist/poe_gems*"
   skip_cleanup: true
   on:
     draft: true

@@ -1,15 +1,18 @@
-language: python
-python:
-  - "3.7"
+os: windows
+language: shell
+before_install:
+  - choco install python --version 3.7.4
+  - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+  - py -m pip install --upgrade pip
 install:
   - pip install -r requirements.txt
 script:
-  - pyinstaller --onefile main.py -n poe_gems
+  - pyinstaller --onefile main.py -n poe_gems.exe
 deploy:
   provider: releases
   api_key:
     secure: $RELEASES_API_KEY
-  file: ./dist/poe_gems.exe
+  file: ./dist/poe_gems*
   skip_cleanup: true
   on:
     draft: true

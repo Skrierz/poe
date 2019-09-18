@@ -42,14 +42,3 @@ def get_equipped_gems_requirements(data):
             gems[gem["typeLine"]] = requirements
 
     return gems
-
-
-def main():
-    character_name = input('Введите имя Вашего персонажа: ')
-
-    gems = get_equipped_gems_requirements(get_character_data(character_name))
-    [print(f'gem: {k}. requirements: {v}') for k,v in gems.items()]
-
-
-if __name__ == '__main__':
-    main()

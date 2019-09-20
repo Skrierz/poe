@@ -7,13 +7,13 @@ before_install:
 install:
   - pip install -r requirements.txt
 script:
-  - pyinstaller --onefile main.py -n poe_gems.exe
+  - pyinstaller --onefile poe/main.py -n poe.exe
 deploy:
   provider: releases
   api_key:
     secure: $RELEASES_API_KEY
   file_glob: true
-  file: "./dist/poe_gems*"
+  file: "./dist/poe*"
   skip_cleanup: true
   on:
     tags: true

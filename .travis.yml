@@ -6,6 +6,8 @@ before_install:
   - py -m pip install --upgrade pip
 install:
   - pip install -r requirements.txt
+before_script:
+  - pytest
 script:
   - pyinstaller --onefile poe/main.py -n poe.exe
 deploy:

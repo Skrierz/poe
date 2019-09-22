@@ -5,7 +5,7 @@ from poe.core import core
 
 class TestGetCharacterData:
     character_name = 'Skrierz'
-    cookies = pytest.poesessid
+    cookies = {'POESESSID': pytest.poesessid}
 
     def test_returns_valid_data(self):
         data = core.get_character_data(self.character_name, self.cookies)

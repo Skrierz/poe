@@ -7,7 +7,7 @@ before_install:
 install:
   - pip install -r requirements.txt
 before_script:
-  - pytest --poesessid $POESESSID
+  - cd poe/tests && pytest --poesessid $POESESSID
 script:
   - pyinstaller --onefile poe/main.py -n poe.exe
 deploy:

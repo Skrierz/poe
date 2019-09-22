@@ -10,7 +10,7 @@ def get_character_data(character_name, cookies=None):
     And also you need to be logged in 'www.pathofexile.com'
 
     :param character_name: Character name which data you want to receive
-    :param cookies:
+    :param cookies: Cookies for 'www.pathofexile.com'. If None, then cookies taken from browser_cookies3
     :return: Data in json format
     """
     character_data_url = f'https://www.pathofexile.com/character-window/get-items?character={character_name}'

@@ -3,21 +3,23 @@ import requests
 import browser_cookie3  # todo: check this lib and look for alternatives
 
 
-def get_character_data(character_name):
+def get_character_data(character_name, cookies=None):
     """
     Get character data from server.
     You can access ONLY your character.
     And also you need to be logged in 'www.pathofexile.com'
 
     :param character_name: Character name which data you want to receive
+    :param cookies:
     :return: Data in json format
     """
     character_data_url = f'https://www.pathofexile.com/character-window/get-items?character={character_name}'
 
-    # Get cookies from all browsers
-    cj = browser_cookie3.load()
+    if cookies is None:
+        # Get cookies from all browsers
+        cookies = browser_cookie3.load()
 
-    return requests.get(character_data_url, cookies=cj).json()
+    return requests.get(character_data_url, cookies=cookies).json()
 
 
 def get_equipped_gems_requirements(data):

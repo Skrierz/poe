@@ -22,5 +22,5 @@ class TestGetCharacterData:
                 continue
 
             gems.extend([i['typeLine'] for i in item['socketedItems']])
-        assert [x[0] for _, v in core.get_equipped_gems_requirements(data).items() for x in v] == gems
+        assert [x['name'] for x in core.get_equipped_gems_requirements(data)] == gems
 

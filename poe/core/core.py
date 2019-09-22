@@ -1,6 +1,6 @@
 import requests
-import json
-import browser_cookie3 # todo: check this lib and look for alternatives
+
+import browser_cookie3  # todo: check this lib and look for alternatives
 
 
 def get_character_data(character_name):
@@ -25,22 +25,9 @@ def get_equipped_gems_requirements(data):
     Parse character data and return info about equipped gems and their requirements
 
     :param data: Character data in json
-    :return: Dict with key = item type and value = list of lists
-
-    return example:
-    {
-        'BodyArmour':
-            [
-                ('Melee Physical Damage Support', [('Str', '108')]),
-                ('Fortify Support', [('Str', '108')]),
-                ('Vaal Cyclone', [('Str', '68'), ('Dex', '98')]),
-                ('Increased Area of Effect Support', [('Int', '109')]),
-                ('Elemental Damage with Attacks Support', [('Str', '68'), ('Int', '47')]),
-                ('Pulverise Support', [('Str', '105')])
-            ]
-    }
+    :return: List of dicts with gem info
     """
-    gems = {}
+    gems = []
 
     for item in data['items']:
         try:
@@ -54,7 +41,6 @@ def get_equipped_gems_requirements(data):
                 if req['name'] in ('Dex', 'Int', 'Str'):
                     requirements.append((req['name'], req['values'][0][0]))
 
-            gems.setdefault(item['inventoryId'], [])
-            gems[item['inventoryId']].append((gem['typeLine'], requirements))
+            gems.append({'name': gem['typeLine'], 'item': item['inventoryId'], 'requirements': requirements})
 
     return gems

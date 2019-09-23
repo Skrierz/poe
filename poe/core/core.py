@@ -17,7 +17,7 @@ def get_character_data(character_name, cookies=None):
 
     if cookies is None:
         # Get cookies from all browsers
-        cookies = browser_cookie3.load()
+        cookies = browser_cookie3.load(domain_name='.pathofexile.com')
 
     return requests.get(character_data_url, cookies=cookies).json()
 

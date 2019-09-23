@@ -7,6 +7,8 @@ def main():
     gems = get_equipped_gems_requirements(get_character_data(character_name))
     [print(f'gem: {x["name"]}. requirements: {x["requirements"]}') for x in gems]
 
+    input('Press Enter to close app...')
+
 
 if __name__ == '__main__':
     main()

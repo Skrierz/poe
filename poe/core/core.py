@@ -1,6 +1,6 @@
 import requests
 
-import browser_cookie3  # todo: check this lib and look for alternatives
+import browser_cookie3  # Version 0.7.6 works only with chrome and firefox
 
 
 def get_character_data(character_name, cookies=None):

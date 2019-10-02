@@ -4,16 +4,17 @@ from poe.core import core
 
 
 class TestGetCharacterData:
-    character_name = 'Skrierz'
-    cookies = {'POESESSID': pytest.poesessid}
+    account_name = 'Skrierz'
+    realm = 'pc'
+    character_name = 'Skrierz_test'
 
     def test_returns_valid_data(self):
-        data = core.get_character_data(self.character_name, self.cookies)
+        data = core.get_character_data(self.account_name, self.realm, self.character_name)
 
         assert data['character']['name'] == self.character_name
 
     def test_returns_valid_gems(self):
-        data = core.get_character_data(self.character_name, self.cookies)
+        data = core.get_character_data(self.account_name, self.realm, self.character_name)
 
         gems = []
         for item in data['items']:

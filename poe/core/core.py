@@ -1,33 +1,31 @@
+from typing import List
+
 import requests
 
 import browser_cookie3  # todo: check this lib and look for alternatives
 
 
-def get_character_data(character_name, cookies=None):
+def get_character_data(account_name: str, realm: str, character_name: str) -> dict:
     """
     Get character data from server.
-    You can access ONLY your character.
-    And also you need to be logged in 'www.pathofexile.com'
 
-    :param character_name: Character name which data you want to receive
-    :param cookies: Cookies for 'www.pathofexile.com'. If None, then cookies taken from browser_cookies3
-    :return: Data in json format
+    :param realm: Account's realm: ('pc', 'ps4'(?), 'xbox'(?))
+    :param account_name: Character owner account's name
+    :param character_name: Character's name which data you want to receive
+    :return: Character data
     """
-    character_data_url = f'https://www.pathofexile.com/character-window/get-items?character={character_name}'
+    character_data_url = (f'https://www.pathofexile.com/character-window/get-items?accountName={account_name}'
+                          f'&realm={realm}&character={character_name}')
 
-    if cookies is None:
-        # Get cookies from all browsers
-        cookies = browser_cookie3.load(domain_name='.pathofexile.com')
-
-    return requests.get(character_data_url, cookies=cookies).json()
+    return requests.get(character_data_url).json()
 
 
-def get_equipped_gems_requirements(data):
+def get_equipped_gems_requirements(data: dict) -> List[dict]:
     """
     Parse character data and return info about equipped gems and their requirements
 
-    :param data: Character data in json
-    :return: List of dicts with gem info
+    :param data: Character data
+    :return: Gem's info
     """
     gems = []
 

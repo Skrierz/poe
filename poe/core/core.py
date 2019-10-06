@@ -2,7 +2,7 @@ from typing import List
 
 import requests
 
-import browser_cookie3  # Version 0.7.6 works only with chrome and firefox
+from poe.core.exceptions import ResourceNotFoundException
 
 
 def get_character_data(account_name: str, realm: str, character_name: str) -> dict:
@@ -17,7 +17,12 @@ def get_character_data(account_name: str, realm: str, character_name: str) -> di
     character_data_url = (f'https://www.pathofexile.com/character-window/get-items?accountName={account_name}'
                           f'&realm={realm}&character={character_name}')
 
-    return requests.get(character_data_url).json()
+    data = requests.get(character_data_url).json()
+
+    if 'error' in data:
+        raise ResourceNotFoundException()
+
+    return data
 
 
 def get_equipped_gems_requirements(data: dict) -> List[dict]:

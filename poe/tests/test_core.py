@@ -1,12 +1,20 @@
+import time
+
 import pytest
 
 from poe.core import core
+from poe.core.exceptions import ResourceNotFoundException
 
 
-class TestGetCharacterData:
+class TestCharacterData:
     account_name = 'Skrierz'
     realm = 'pc'
     character_name = 'Skrierz_test'
+    invalid_name = 'NonexistentName'
+
+    def teardown(self):
+        """Prevent too many requests"""
+        time.sleep(1)
 
     def test_returns_valid_data(self):
         data = core.get_character_data(self.account_name, self.realm, self.character_name)
@@ -26,3 +34,10 @@ class TestGetCharacterData:
             gems.extend([i['typeLine'] for i in item['socketedItems']])
         assert [x['name'] for x in core.get_equipped_gems_requirements(data)] == gems
 
+    @pytest.mark.parametrize('invalid_data',
+                             [(invalid_name, realm, character_name),
+                              (account_name, invalid_name, character_name),
+                              (account_name, realm, invalid_name)])
+    def test_invalid_character_credentials(self, invalid_data):
+        with pytest.raises(ResourceNotFoundException):
+            core.get_character_data(*invalid_data)

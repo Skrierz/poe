@@ -1,4 +1,12 @@
-browser_cookie3
+# Project dependency
 requests
+
+# Executable builder
 pyinstaller
+
+# Test's framework
 pytest
+
+# Linter
+wemake-python-styleguide
+

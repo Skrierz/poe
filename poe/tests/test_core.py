@@ -13,7 +13,9 @@ class TestCharacterData:
     invalid_name = 'NonexistentName'
 
     def teardown(self):
-        """Prevent too many requests"""
+        """Tests setup"""
+
+        # Prevent too many requests to POE server
         time.sleep(1)
 
     def test_returns_valid_data(self):
@@ -23,6 +25,7 @@ class TestCharacterData:
 
     def test_returns_valid_gems(self):
         data = core.get_character_data(self.account_name, self.realm, self.character_name)
+        character = core.Character(data)
 
         gems = []
         for item in data['items']:
@@ -32,7 +35,7 @@ class TestCharacterData:
                 continue
 
             gems.extend([i['typeLine'] for i in item['socketedItems']])
-        assert [x['name'] for x in core.get_equipped_gems_requirements(data)] == gems
+        assert [x['name'] for x in character.get_gems_info()] == gems
 
     @pytest.mark.parametrize('invalid_data',
                              [(invalid_name, realm, character_name),

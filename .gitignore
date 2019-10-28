@@ -1,8 +1,17 @@
-.idea/
-dist/
-*.spec
-build/
+# Byte-compiled / optimized / DLL files
 __pycache__/
 .pytest_cache
-test.py
+.idea/
 
+# Distribution / packaging
+dist/
+build/
+
+# PyInstaller
+*.spec
+
+# Environments
+venv/
+
+# Test file
+test.py

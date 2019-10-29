@@ -4,7 +4,7 @@ from typing import List, Any, Dict  # noqa: Strange error while all seems correc
 
 import requests
 
-from poe.core.exceptions import ResourceNotFoundException
+from poe.core.exceptions import server_error_router
 
 
 def get_character_data(
@@ -29,7 +29,7 @@ def get_character_data(
     character_data = requests.get(base_url, params=request_params).json()
 
     if 'error' in character_data:
-        raise ResourceNotFoundException()
+        raise server_error_router(character_data['error'])
 
     return character_data
 

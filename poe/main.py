@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from poe.core.core import get_character_data, Character
-from poe.core.exceptions import ResourceNotFoundException
+from poe.core.exceptions import ResourceNotFound
 
 
 def request_character_credentials_from_user():
@@ -18,7 +18,7 @@ def main():
     while not character_found:
         try:
             character_data = get_character_data(*character_credentials)
-        except ResourceNotFoundException as e:
+        except ResourceNotFound as e:
             print(e)
             character_credentials = request_character_credentials_from_user()
         else:

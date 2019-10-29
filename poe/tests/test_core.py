@@ -3,7 +3,7 @@ import time
 import pytest
 
 from poe.core import core
-from poe.core.exceptions import ResourceNotFoundException
+from poe.core.exceptions import ResourceNotFound
 
 
 class TestCharacterData:
@@ -42,5 +42,5 @@ class TestCharacterData:
                               (account_name, invalid_name, character_name),
                               (account_name, realm, invalid_name)])
     def test_invalid_character_credentials(self, invalid_data):
-        with pytest.raises(ResourceNotFoundException):
+        with pytest.raises(ResourceNotFound):
             core.get_character_data(*invalid_data)

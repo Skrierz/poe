@@ -9,4 +9,3 @@ pytest
 
 # Linter
 wemake-python-styleguide
-

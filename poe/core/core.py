@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from typing import List, Any, Dict  # noqa: Strange error while all seems correct I001
+from pathlib import Path
+import json
 
 import requests
 
@@ -79,3 +81,47 @@ class Character:
                 requirements.append(gem_requirement)
 
         return requirements
+
+
+class GameInfo:
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not GameInfo.__instance:
+            GameInfo.__instance = super(GameInfo, cls).__new__(cls, *args, **kwargs)
+
+        return GameInfo.__instance
+
+    def __init__(self):
+        core_dir = Path(__file__).parent
+        game_info_relative_path = Path('../data/passives.bbl')
+        game_info_path = core_dir.joinpath(game_info_relative_path).resolve()
+
+        with open(game_info_path, 'r') as fp:
+            self._game_info = json.load(fp)
+
+    def get_passives(self, passive_ids: List[str]):
+        return {x: self._game_info['nodes'][x] for x in passive_ids}
+
+    def get_base_character_stats(self, class_id):
+        return self._game_info['characterData'][class_id]
+
+
+class CharacterPassives:
+    def __init__(self, passive_ids: List[str]):
+        self._passive_ids = passive_ids
+        self._add_stats_from_passives = {}
+        self._character_passives = GameInfo().get_passives(passive_ids)
+
+    def get_add_stats_from_passives(self):
+        add_stats = {'int': 0, 'str': 0, 'dex': 0}
+
+        for passive in self._character_passives.values():
+            add_stats['int'] += passive['ia']
+            add_stats['str'] += passive['sa']
+            add_stats['dex'] += passive['da']
+
+        return add_stats
+
+    def get_passive(self, passive_id):
+        return self._character_passives[passive_id]

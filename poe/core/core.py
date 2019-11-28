@@ -9,31 +9,48 @@ import requests
 from poe.core.exceptions import server_error_router
 
 
-def get_character_data(
-    account_name: str,
-    realm: str,
-    character_name: str,
-) -> dict:
-    """Get character data from server.
+class CharacterDataRequests:
+    def __init__(self, account_name, realm, character_name):
+        self._base_url = 'https://www.pathofexile.com/character-window/'
+        self._account_name = account_name
+        self._realm = realm
+        self._character_name = character_name
 
-    :param realm: Account's realm: ('pc', 'ps4'(?), 'xbox'(?))
-    :param account_name: Character owner account's name
-    :param character_name: Character's name which data you want to receive
-    :return: Character data
-    """
-    base_url = 'https://www.pathofexile.com/character-window/get-items'
-    request_params = {
-        'accountName': account_name,
-        'realm': realm,
-        'character': character_name,
-    }
+    def get_character_items(self):
+        server_method = 'get-items'
+        request_params = {
+            'accountName': self._account_name,
+            'realm': self._realm,
+            'character': self._character_name,
+        }
+        return self._make_request(server_method, request_params)
 
-    character_data = requests.get(base_url, params=request_params).json()
+    def get_passives(self):
+        server_method = 'get-passive-skills'
+        request_params = {
+            'accountName': self._account_name,
+            'realm': self._realm,
+            'character': self._character_name,
+        }
+        return self._make_request(server_method, request_params)
 
-    if 'error' in character_data:
-        raise server_error_router(character_data['error'])
+    def _check_error(self, response):
+        if 'error' in response:
+            raise server_error_router(response['error'])
 
-    return character_data
+    def _make_request(self, server_method, request_params):
+        response = requests.get(self._base_url + server_method, params=request_params).json()
+        self._check_error(response)
+
+        return response
+
+#     """Get character items from server.
+#
+#     :param realm: Account's realm: ('pc', 'ps4'(?), 'xbox'(?))
+#     :param account_name: Character owner account's name
+#     :param character_name: Character's name which data you want to receive
+#     :return: Character data
+#     """
 
 
 class Character:
@@ -46,11 +63,15 @@ class Character:
         """
         self._raw_data = character_data
         self._equipped_gems = []
-        self._parse_equipped_gems()
 
     def get_gems_info(self) -> List[dict]:
         """Return equipped gems."""
+        if not self._equipped_gems:
+            self._parse_equipped_gems()
         return self._equipped_gems
+
+    def get_class_id(self):
+        return self._raw_data['character']['class_id']
 
     def _parse_equipped_gems(self) -> None:
         """Parse gems info from character data."""
@@ -108,10 +129,9 @@ class GameInfo:
 
 
 class CharacterPassives:
-    def __init__(self, passive_ids: List[str]):
-        self._passive_ids = passive_ids
-        self._add_stats_from_passives = {}
-        self._character_passives = GameInfo().get_passives(passive_ids)
+    def __init__(self, passives_data):
+        self._raw_passives = passives_data
+        self._character_passives = {}
 
     def get_add_stats_from_passives(self):
         add_stats = {'int': 0, 'str': 0, 'dex': 0}
@@ -124,4 +144,13 @@ class CharacterPassives:
         return add_stats
 
     def get_passive(self, passive_id):
+        if not self._character_passives:
+            self._update_character_passives()
         return self._character_passives[passive_id]
+
+    def _update_raw_data(self, passives_data):
+        self._raw_passives = passives_data
+        self._character_passives = {}
+
+    def _update_character_passives(self):
+        self._character_passives = GameInfo().get_passives(self._raw_passives['hashes'])

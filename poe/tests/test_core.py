@@ -109,7 +109,8 @@ class TestPOERequests:
 
     def test_returns_valid_data(self):
         """Test that valid request returns valid character data."""
-        data = core.get_character_data(self.account_name, self.realm, self.character_name)
+        request = core.CharacterDataRequests(self.account_name, self.realm, self.character_name)
+        data = request.get_character_items()
 
         assert data['character']['name'] == self.character_name
 
@@ -123,5 +124,7 @@ class TestPOERequests:
     )
     def test_invalid_character_credentials(self, invalid_data):
         """Test that invalid request returns invalid character data."""
+        request = core.CharacterDataRequests(*invalid_data)
+
         with pytest.raises(ResourceNotFound):
-            core.get_character_data(*invalid_data)
+            request.get_character_items()

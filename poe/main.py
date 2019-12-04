@@ -19,7 +19,7 @@ def main():
 
     while not character_found:
         try:
-            character_data = request.get_character_items()
+            character_data = request.get_items()
         except ResourceNotFound as e:
             print(e)
             character_credentials = request_character_credentials_from_user()

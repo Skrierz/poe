@@ -99,7 +99,7 @@ class Character:
 
     def get_class_id(self) -> str:
         """Get character class id."""
-        return self._raw_data['character']['class_id']
+        return self._raw_data['character']['classId']
 
     def _parse_equipped_gems(self) -> None:
         """Parse gems info from character data."""
@@ -188,6 +188,9 @@ class CharacterPassives:
 
         :return: Added character stats
         """
+        # Fill self._character_passives if empty
+        self.get_passive(None)
+
         add_stats = {'int': 0, 'str': 0, 'dex': 0}
 
         for passive in self._character_passives.values():
@@ -205,7 +208,7 @@ class CharacterPassives:
         """
         if not self._character_passives:
             self._update_character_passives()
-        return self._character_passives[passive_id]
+        return self._character_passives.get(passive_id)
 
     def _update_raw_data(self, passives_data: Dict[str, Any]) -> None:
         """Update character passives data.
@@ -217,4 +220,7 @@ class CharacterPassives:
 
     def _update_character_passives(self) -> None:
         """Get passives data from GameInfo class."""
-        self._character_passives = GameInfo().get_passives(self._raw_passives['hashes'])
+        # From server passives returns as int
+        passives = [str(x) for x in self._raw_passives['hashes']]
+
+        self._character_passives = GameInfo().get_passives(passives)

@@ -82,18 +82,26 @@ class TestCharacter:
             'experience': 4641,
         },
     }
-    expected_parsed_values = [
-        {'name': 'Cleave', 'equipped_in': 'Offhand', 'requirements': []},
-        {'name': 'Cleave', 'equipped_in': 'Offhand', 'requirements': []},
-    ]
 
-    def test_class_correct_parse_data(self):
-        """Test that parsing algorithm works correctly."""
+    def test_get_gems_info_correct_data(self):
+        """Gems parsing algorithm works correctly."""
+        expected_parsed_values = [
+            {'name': 'Cleave', 'equipped_in': 'Offhand', 'requirements': []},
+            {'name': 'Cleave', 'equipped_in': 'Offhand', 'requirements': []},
+        ]
+
         character = core.Character(self.test_data)
-        assert character.get_gems_info() == self.expected_parsed_values
+        assert character.get_gems_info() == expected_parsed_values
+
+    def test_get_class_id_correct_data(self):
+        """Class id parsed correctly."""
+        expected_class_id = 4
+
+        character = core.Character(self.test_data)
+        assert character.get_class_id() == expected_class_id
 
 
-class TestPOERequests:
+class TestCharacterDataRequests:
     """Tests server requests."""
 
     # Character for tests
@@ -107,8 +115,8 @@ class TestPOERequests:
         # Prevent too many requests to POE server
         time.sleep(1)
 
-    def test_returns_valid_data(self):
-        """Test that valid request returns valid character data."""
+    def test_get_items_returns_valid_data(self):
+        """Valid request returns valid character data."""
         request = core.CharacterDataRequests(self.account_name, self.realm, self.character_name)
         data = request.get_items()
 
@@ -122,9 +130,82 @@ class TestPOERequests:
             (account_name, realm, invalid_name),
         ],
     )
-    def test_invalid_character_credentials(self, invalid_data):
-        """Test that invalid request returns invalid character data."""
+    @pytest.mark.parametrize('method_name', ['get_items', 'get_passives'])
+    def test_invalid_character_credentials(self, invalid_data, method_name):
+        """Invalid request returns invalid character data."""
         request = core.CharacterDataRequests(*invalid_data)
+        cls_method = getattr(request, method_name)
 
         with pytest.raises(ResourceNotFound):
-            request.get_items()
+            cls_method()
+
+    def test_get_passives_returns_valid_data(self):
+        """Parse algorithm for passives works correctly."""
+        expected_hashes_in_passives = [476, 24377, 30691, 39725, 40867, 42911, 47389, 56803, 63649]
+
+        request = core.CharacterDataRequests(self.account_name, self.realm, self.character_name)
+        data = request.get_passives()
+        assert all([x in data.get('hashes') for x in expected_hashes_in_passives])
+
+
+class TestGameInfo:
+    """Tests GameInfo class."""
+
+    def test_get_passives_returns_valid_data(self):
+        passive_ids = ['476', '24377']
+        expected_answer = {
+            '476': {
+                'id': 476,
+                'icon': 'Art/2DArt/SkillIcons/passives/plusstrength.png',
+                'ks': False,
+                'not': False,
+                'dn': 'Strength',
+                'm': False,
+                'isJewelSocket': False,
+                'isMultipleChoice': False,
+                'isMultipleChoiceOption': False,
+                'passivePointsGranted': 0,
+                'spc': [],
+                'sd': ['+10 to Strength'],
+                'g': 408,
+                'o': 0,
+                'oidx': 0,
+                'sa': 10,
+                'da': 0,
+                'ia': 0,
+                'out': [],
+                'in': [476, 476, 476, 476]
+            },
+            '24377': {
+                'id': 24377,
+                'icon': 'Art/2DArt/SkillIcons/passives/attackspeed.png',
+                'ks': False,
+                'not': False,
+                'dn': 'Attack Speed',
+                'm': False,
+                'isJewelSocket': False,
+                'isMultipleChoice': False,
+                'isMultipleChoiceOption': False,
+                'passivePointsGranted': 0,
+                'spc': [],
+                'sd': ['3% increased Attack Speed'],
+                'g': 227,
+                'o': 2,
+                'oidx': 11,
+                'sa': 0,
+                'da': 0,
+                'ia': 0,
+                'out': [35568, 56803],
+                'in': [24377]
+            },
+        }
+
+        passive = core.GameInfo().get_passives(passive_ids)
+        assert passive == expected_answer
+
+    def test_get_base_character_stats_return_valid_data(self):
+        class_id = '4'
+        expected_answer = {'base_str': 23, 'base_dex': 23, 'base_int': 14}
+
+        character_base_stats = core.GameInfo().get_base_character_stats(class_id)
+        assert character_base_stats == expected_answer

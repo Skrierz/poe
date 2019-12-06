@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from typing import List, Any, Dict  # noqa: Strange error while all seems correct I001
+from typing import List, Any, Dict, Union  # noqa: Strange error while all seems correct I001
 from pathlib import Path
 import json
 
@@ -143,7 +143,7 @@ class GameInfo:
         """
         self.__dict__ = self.__shared_state
         if not path_to_game_data:
-            path_to_game_data = '../data/passives.bbl'
+            path_to_game_data = '../data/passives.json'
 
         core_dir = Path(__file__).parent.resolve()
         game_info_relative_path = Path(path_to_game_data)
@@ -200,7 +200,7 @@ class CharacterPassives:
 
         return add_stats
 
-    def get_passive(self, passive_id: str) -> Dict[str, Any]:
+    def get_passive(self, passive_id: Union[str, None]) -> Dict[str, Any]:
         """Get character passive data.
 
         :param passive_id: Character passive id

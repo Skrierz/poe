@@ -183,6 +183,16 @@ class CharacterPassives:
         self._raw_passives = passives_data
         self._character_passives = {}
 
+    def get_passive(self, passive_id: Union[str, None]) -> Dict[str, Any]:
+        """Get character passive data.
+
+        :param passive_id: Character passive id
+        :return: Passive data
+        """
+        if not self._character_passives:
+            self._update_character_passives()
+        return self._character_passives.get(passive_id)
+
     def get_add_stats_from_passives(self) -> dict:
         """Parse added stats from passives.
 
@@ -199,16 +209,6 @@ class CharacterPassives:
             add_stats['dex'] += passive['da']
 
         return add_stats
-
-    def get_passive(self, passive_id: Union[str, None]) -> Dict[str, Any]:
-        """Get character passive data.
-
-        :param passive_id: Character passive id
-        :return: Passive data
-        """
-        if not self._character_passives:
-            self._update_character_passives()
-        return self._character_passives.get(passive_id)
 
     def _update_raw_data(self, passives_data: Dict[str, Any]) -> None:
         """Update character passives data.

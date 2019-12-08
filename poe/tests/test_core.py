@@ -152,6 +152,7 @@ class TestGameInfo:
     """Tests GameInfo class."""
 
     def test_get_passives_returns_valid_data(self):
+        """get_passives returns passives data for correct ids."""
         passive_ids = ['476', '24377']
         expected_answer = {
             '476': {
@@ -204,8 +205,44 @@ class TestGameInfo:
         assert passive == expected_answer
 
     def test_get_base_character_stats_return_valid_data(self):
+        """get_base_character returns base stats for correct class id."""
         class_id = '4'
         expected_answer = {'base_str': 23, 'base_dex': 23, 'base_int': 14}
 
         character_base_stats = core.GameInfo().get_base_character_stats(class_id)
         assert character_base_stats == expected_answer
+
+
+class TestCharacterPassives:
+    """Tests for CharacterPassives class."""
+
+    @pytest.mark.parametrize(
+        'passive_ids, expected_result',
+        [
+            ({'hashes': [24377]}, {'int': 0, 'str': 0, 'dex': 0}),
+            ({'hashes': [30691]}, {'int': 10, 'str': 0, 'dex': 0}),
+            ({'hashes': [476]}, {'int': 0, 'str': 10, 'dex': 0}),
+            ({'hashes': [63649]}, {'int': 0, 'str': 0, 'dex': 10}),
+            ({'hashes': [30691, 476]}, {'int': 10, 'str': 10, 'dex': 0}),
+            ({'hashes': [30691, 63649]}, {'int': 10, 'str': 0, 'dex': 10}),
+            ({'hashes': [476, 63649]}, {'int': 0, 'str': 10, 'dex': 10}),
+            ({'hashes': [30691, 476, 63649]}, {'int': 10, 'str': 10, 'dex': 10}),
+        ],
+    )
+    def test_get_add_stats_from_passives_parse_add_stats_correctly(self, passive_ids, expected_result):
+        """Parse algorithm for added stats works correctly."""
+        passives = core.CharacterPassives(passive_ids)
+        assert passives.get_add_stats_from_passives() == expected_result
+
+    @pytest.mark.parametrize(
+        'passives, passive_id, expected_result',
+        [
+            ({'hashes': [61308]}, '61308', {'id': 61308, 'icon': 'Art/2DArt/SkillIcons/passives/amplify.png', 'ks': False, 'not': True, 'dn': 'Amplify', 'm': False, 'isJewelSocket': False, 'isMultipleChoice': False, 'isMultipleChoiceOption': False, 'passivePointsGranted': 0, 'spc': [], 'sd': ['10% increased Area of Effect', '20% increased Area Damage'], 'g': 142, 'o': 2, 'oidx': 11, 'sa': 0, 'da': 0, 'ia': 0, 'out': [], 'in': [61308, 61308, 61308]}),
+            ({'hashes': [43303]}, '43303', {'id': 43303, 'icon': 'Art/2DArt/SkillIcons/passives/2handeddamage.png', 'ks': False, 'not': False, 'dn': 'Two Handed Melee Damage', 'm': False, 'isJewelSocket': False, 'isMultipleChoice': False, 'isMultipleChoiceOption': False, 'passivePointsGranted': 0, 'spc': [], 'sd': ['12% increased Physical Damage with Two Handed Melee Weapons', '12% increased Damage with Ailments from Attack Skills while wielding a Two Handed Weapon'], 'g': 226, 'o': 2, 'oidx': 5, 'sa': 0, 'da': 0, 'ia': 0, 'out': [30842, 34031], 'in': [43303]}),
+            ({'hashes': [24377]}, '24377', {'id': 24377, 'icon': 'Art/2DArt/SkillIcons/passives/attackspeed.png', 'ks': False, 'not': False, 'dn': 'Attack Speed', 'm': False, 'isJewelSocket': False, 'isMultipleChoice': False, 'isMultipleChoiceOption': False, 'passivePointsGranted': 0, 'spc': [], 'sd': ['3% increased Attack Speed'], 'g': 227, 'o': 2, 'oidx': 11, 'sa': 0, 'da': 0, 'ia': 0, 'out': [35568, 56803], 'in': [24377]}),
+        ],
+    )
+    def test_get_passive(self, passives, passive_id, expected_result):
+        """get_passive returns valid data for passive id."""
+        passives = core.CharacterPassives(passives)
+        assert passives.get_passive(passive_id) == expected_result

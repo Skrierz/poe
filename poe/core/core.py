@@ -59,9 +59,11 @@ class CharacterDataRequests:
         """Check errors in response.
 
         :param response: Response from server
+        :raises: ServerAnswer if 'error' key in response
         """
-        if 'error' in response:
-            raise server_error_router(response['error'])
+        error = response.get('error')
+        if error:
+            raise server_error_router(error)
 
     def _make_request(
         self,

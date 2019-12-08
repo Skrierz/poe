@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import json
 from typing import List, Any, Dict, Union  # noqa: Strange error while all seems correct I001
 from pathlib import Path
-import json
 
 import requests
 
@@ -13,10 +13,10 @@ class CharacterDataRequests:
     """Class for requesting data from server."""
 
     def __init__(
-            self,
-            account_name: str,
-            realm: str,
-            character_name: str
+        self,
+        account_name: str,
+        realm: str,
+        character_name: str,
     ) -> None:
         """Initializer.
 
@@ -64,17 +64,20 @@ class CharacterDataRequests:
             raise server_error_router(response['error'])
 
     def _make_request(
-            self,
-            method: str,
-            params: dict
+        self,
+        method: str,
+        request_params: dict,
     ) -> Dict[str, Any]:
         """Method to make request to server.
 
         :param method: Server method
-        :param params: Parameters for request
+        :param request_params: Parameters for request
         :return: Server response if success or raise Exception
         """
-        response = requests.get(self._base_url + method, params=params).json()
+        response = requests.get(
+            self._base_url + method,
+            params=request_params,
+        ).json()
         self._check_error(response)
 
         return response
@@ -134,14 +137,15 @@ class Character:
 
 class GameInfo:
     """Borg class to game data read from data/passives file."""
-    __shared_state = {}
+
+    _shared_state = {}
 
     def __init__(self, path_to_game_data: str = None) -> None:
         """Read data from file if not read before.
 
         :param path_to_game_data: Relative path to file with game data
         """
-        self.__dict__ = self.__shared_state
+        self.__dict__ = self._shared_state
         if not path_to_game_data:
             path_to_game_data = '../data/passives.json'
 
@@ -149,9 +153,7 @@ class GameInfo:
         game_info_relative_path = Path(path_to_game_data)
         game_info_path = core_dir.joinpath(game_info_relative_path).resolve()
 
-        try:
-            self._game_info
-        except AttributeError:
+        if not self.__dict__.get('_game_info'):
             with open(game_info_path, 'r') as fp:
                 self._game_info = json.load(fp)
 
@@ -161,7 +163,7 @@ class GameInfo:
         :param passive_ids: Ids of passives data to get
         :return: Passives data
         """
-        return {x: self._game_info['nodes'][x] for x in passive_ids}
+        return {each: self._game_info['nodes'][each] for each in passive_ids}
 
     def get_base_character_stats(self, class_id: str) -> Dict[str, Any]:
         """Resolve class id to class base stats.
@@ -221,6 +223,6 @@ class CharacterPassives:
     def _update_character_passives(self) -> None:
         """Get passives data from GameInfo class."""
         # From server passives returns as int
-        passives = [str(x) for x in self._raw_passives['hashes']]
+        passives = [str(each) for each in self._raw_passives['hashes']]
 
         self._character_passives = GameInfo().get_passives(passives)

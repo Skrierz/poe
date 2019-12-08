@@ -9,6 +9,8 @@ install:
 before_script:
   - cd poe/tests && pytest
   - cd ../..
+  - flake8 poe/core/core.py
+  - flake8 poe/core/exceptions.py
 script:
   - pyinstaller --onefile poe/main.py -n poe.exe
 deploy:

@@ -21,6 +21,14 @@ class UnknownAnswer(ServerAnswer):
         return f'Unknown server answer: {self.message}'
 
 
+class ForbiddenRequest(ServerAnswer):
+    """Server return 'Forbidden'."""
+
+    def __str__(self):
+        """Human readable representation."""
+        return 'Requested data is forbidden'
+
+
 class ResourceNotFound(ServerAnswer):
     """Answer from server when character not found.
 
@@ -34,6 +42,7 @@ class ResourceNotFound(ServerAnswer):
 
 exceptions = {
     'Resource not found': ResourceNotFound,
+    'Forbidden': ForbiddenRequest,
 }
 
 

@@ -117,7 +117,7 @@ class TestCharacterDataRequests:
 
     def test_get_items_returns_valid_data(self):
         """Valid request returns valid character data."""
-        request = core.CharacterDataRequests(self.account_name, self.realm, self.character_name)
+        request = core.CharacterDataRequests(self.account_name, self.character_name, self.realm)
         data = request.get_items()
 
         assert data['character']['name'] == self.character_name
@@ -125,9 +125,9 @@ class TestCharacterDataRequests:
     @pytest.mark.parametrize(
         'invalid_data',
         [
-            (invalid_name, realm, character_name),
-            (account_name, invalid_name, character_name),
-            (account_name, realm, invalid_name),
+            (invalid_name, character_name, realm),
+            (account_name, invalid_name, realm),
+            (account_name, character_name, invalid_name),
         ],
     )
     @pytest.mark.parametrize('method_name', ['get_items', 'get_passives'])
@@ -143,7 +143,7 @@ class TestCharacterDataRequests:
         """Parse algorithm for passives works correctly."""
         expected_hashes_in_passives = [476, 24377, 30691, 39725, 40867, 42911, 47389, 56803, 63649]
 
-        request = core.CharacterDataRequests(self.account_name, self.realm, self.character_name)
+        request = core.CharacterDataRequests(self.account_name, self.character_name, self.realm)
         data = request.get_passives()
         assert all([x in data.get('hashes') for x in expected_hashes_in_passives])
 

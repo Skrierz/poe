@@ -15,8 +15,8 @@ class CharacterDataRequests:
     def __init__(
         self,
         account_name: str,
-        realm: str,
         character_name: str,
+        realm: str = 'pc',
     ) -> None:
         """Initializer.
 
